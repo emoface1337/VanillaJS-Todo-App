@@ -7,16 +7,23 @@ class Database {
         return this.db
     }
 
+    getLength() {
+        return this.db.length
+    }
+
+    getCompleted() {
+        return this.db.filter(item => {
+            if (item.completed)
+                return true
+        }).length
+    }
+
     addItem(item) {
         this.db.push(item)
     }
 
     removeItem(itemToRemove) {
         this.db = this.db.filter(item => item.id !== +itemToRemove.dataset.id)
-    }
-
-    getCount() {
-        return this.db.length
     }
 }
 
@@ -38,6 +45,7 @@ let DB = new Database(
 const listGroup = document.querySelector('.list-group')
 const addButton = document.querySelector('.add__button')
 const addText = document.querySelector('.add__text')
+const progressBar = document.querySelector('.progress-bar')
 
 addButton.addEventListener('click', () => {
     DB.addItem({
@@ -50,6 +58,8 @@ addButton.addEventListener('click', () => {
 
 const renderItems = (items) => {
     let todoList = ''
+    listGroup.innerHTML = ''
+
     items.map(item => {
         todoList += `<li class="list-group-item d-flex justify-content-between align-items-center${item.completed ? ' done' : ''}" data-id="${item.id}">
                             <div class="item__left d-flex align-items-center justify-content-center">
@@ -69,6 +79,10 @@ const renderItems = (items) => {
         DB.removeItem(item)
         renderItems(DB.getItems())
     }) : null)
+
+    const completedPercentage = ((DB.getCompleted() / DB.getLength()) * 100).toFixed().toString() + '%'
+    progressBar.innerHTML = DB.getCompleted() + ' / ' + DB.getLength()
+    progressBar.style.width = completedPercentage
 }
 
 renderItems(DB.getItems())
