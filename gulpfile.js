@@ -24,10 +24,10 @@ const css = () => {
             {cascade: false}
             )
         )
-        // .pipe(purgecss({
-        //     content: ['index.html']
-        // }))
-        // .pipe(postcss([cssnano()]))
+        .pipe(purgecss({
+            content: ['index.html']
+        }))
+        .pipe(postcss([cssnano()]))
         .pipe(rename("style.min.css"))
         .pipe(gulp.dest("./css/"))
         .pipe(browserSync.stream())
