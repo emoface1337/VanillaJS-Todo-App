@@ -25,6 +25,11 @@ class Database {
     removeItem(itemToRemove) {
         this.db = this.db.filter(item => item.id !== +itemToRemove.dataset.id)
     }
+
+    checkAllCompleted() {
+        this.db.map(item => item.completed = true)
+        console.log(this.db)
+    }
 }
 
 let DB = new Database(
@@ -46,6 +51,7 @@ const listGroup = document.querySelector('.list-group')
 const addButton = document.querySelector('.add__button')
 const addText = document.querySelector('.add__text')
 const progressBar = document.querySelector('.progress-bar')
+const additionalCheckAll = document.querySelector('.additional__check-all')
 
 addButton.addEventListener('click', () => {
     DB.addItem({
@@ -84,6 +90,11 @@ const renderItems = (items) => {
     progressBar.innerHTML = DB.getCompleted() + ' / ' + DB.getLength()
     progressBar.style.width = completedPercentage
 }
+
+additionalCheckAll.addEventListener('click', () => {
+    DB.checkAllCompleted()
+    renderItems(DB.getItems())
+})
 
 renderItems(DB.getItems())
 
