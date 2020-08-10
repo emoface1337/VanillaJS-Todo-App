@@ -8,11 +8,13 @@ const browserSync = require('browser-sync')
 const cssnano = require('cssnano')
 const postcss = require('gulp-postcss')
 const purgecss = require('gulp-purgecss')
+var ts = require("gulp-typescript")
+var tsProject = ts.createProject("tsconfig.json")
 
 const paths = {
     html: ['index.html'],
     sass: ['./sass/**/*.sass'],
-    js: ['./scripts/**/*.js']
+    ts: ['./scripts/**/*.ts']
 }
 
 const css = () => {
@@ -34,8 +36,10 @@ const css = () => {
 }
 
 const scripts = () => {
-    return gulp
-        .src(paths.js)
+    return tsProject
+        .src()
+        .pipe(tsProject())
+        .js.pipe(gulp.dest("./scripts"))
         .pipe(browserSync.stream())
 }
 
@@ -49,7 +53,7 @@ const watch = () => {
         notify: false
     })
     gulp.watch(paths.sass, css)
-    gulp.watch(paths.js, scripts)
+    gulp.watch(paths.ts, scripts)
     gulp.watch("./*.html").on('change', browserSync.reload)
 }
 
