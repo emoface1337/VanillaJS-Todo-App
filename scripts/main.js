@@ -3,21 +3,6 @@ class Database {
         this.db = db
     }
 
-    getItems() {
-        return this.db
-    }
-
-    getLength() {
-        return this.db.length
-    }
-
-    getCompleted() {
-        return this.db.filter(item => {
-            if (item.completed)
-                return true
-        }).length
-    }
-
     addItem(item) {
         this.db.push(item)
     }
@@ -28,7 +13,6 @@ class Database {
 
     checkAllCompleted() {
         this.db.map(item => item.completed = true)
-        console.log(this.db)
     }
 
     checkItem(itemToCheck) {
@@ -60,6 +44,9 @@ const addButton = document.querySelector('.add__button')
 const addText = document.querySelector('.add__text')
 const progressBar = document.querySelector('.progress-bar')
 const additionalCheckAll = document.querySelector('.additional__check-all')
+const allButton = document.querySelector('.all__button')
+const activeButton = document.querySelector('.active__button')
+const completedButton = document.querySelector('.completed__button')
 
 addButton.addEventListener('click', () => {
     DB.addItem({
@@ -67,14 +54,15 @@ addButton.addEventListener('click', () => {
         text: addText.value,
         completed: false
     })
-    renderItems(DB.getItems())
+    renderItems(DB.db)
 })
 
-const renderItems = (items) => {
+const renderItems = (database) => {
+    console.log(database)
     let todoList = ''
     listGroup.innerHTML = ''
 
-    items.map(item => {
+    database.map(item => {
         todoList += `<li class="list-group-item d-flex justify-content-between align-items-center${item.completed ? ' done' : ''}" data-id="${item.id}">
                             <div class="item__left d-flex align-items-center justify-content-center">
                                 <input type="checkbox" class="item__checkbox" ${item.completed ? 'checked' : ''}>
@@ -92,25 +80,35 @@ const renderItems = (items) => {
 
     todoItems.forEach(item => item.querySelector('.item__remove') ? item.querySelector('.item__remove').addEventListener('click', () => {
         DB.removeItem(item)
-        renderItems(DB.getItems())
+        renderItems(DB.db)
     }) : null)
 
     todoItems.forEach(item => item.querySelector('.item__checkbox') ? item.querySelector('.item__checkbox').addEventListener('click', () => {
         DB.checkItem(item)
-        renderItems(DB.getItems())
+        renderItems(DB.db)
     }) : null)
 
-    const completedPercentage = ((DB.getCompleted() / DB.getLength()) * 100).toFixed().toString() + '%'
-    progressBar.innerHTML = DB.getCompleted() + ' / ' + DB.getLength()
+    const completedCount = database.filter(item => {
+        if (item.completed)
+            return true
+    }).length
+
+    const completedPercentage = (completedCount / database.length * 100).toFixed().toString() + '%'
+
+    progressBar.innerHTML = completedCount + ' / ' + database.length
     progressBar.style.width = completedPercentage
 }
 
 additionalCheckAll.addEventListener('click', () => {
     DB.checkAllCompleted()
-    renderItems(DB.getItems())
+    renderItems(DB.db)
 })
 
-renderItems(DB.getItems())
+allButton.addEventListener('click', () => renderItems(DB.db))
+activeButton.addEventListener('click', () => renderItems(DB.db.filter(item => !item.completed)))
+completedButton.addEventListener('click', () => renderItems(DB.db.filter(item => item.completed)))
+
+renderItems(DB.db)
 
 
 
