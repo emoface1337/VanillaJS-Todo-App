@@ -22,6 +22,10 @@ class Database {
             }
         })
     }
+
+    removeAllCompleted() {
+        this.db = this.db.filter(item => !item.completed)
+    }
 }
 
 let DB = new Database(
@@ -47,6 +51,7 @@ const additionalCheckAll = document.querySelector('.additional__check-all')
 const allButton = document.querySelector('.all__button')
 const activeButton = document.querySelector('.active__button')
 const completedButton = document.querySelector('.completed__button')
+const removeCompletedButton = document.querySelector('.remove-completed__button')
 
 addButton.addEventListener('click', () => {
     DB.addItem({
@@ -58,7 +63,6 @@ addButton.addEventListener('click', () => {
 })
 
 const renderItems = (database) => {
-    console.log(database)
     let todoList = ''
     listGroup.innerHTML = ''
 
@@ -74,7 +78,7 @@ const renderItems = (database) => {
                         </li>`
     })
 
-    listGroup.innerHTML = todoList ? todoList : ''
+    listGroup.innerHTML = todoList ? todoList : `<div class="text-center"><h5>Задач нет</h5></div>`
 
     const todoItems = document.querySelectorAll('.list-group-item')
 
@@ -93,7 +97,7 @@ const renderItems = (database) => {
             return true
     }).length
 
-    const completedPercentage = (completedCount / database.length * 100).toFixed().toString() + '%'
+    const completedPercentage = !isNaN(completedCount / database.length * 100) ? (completedCount / database.length * 100).toFixed().toString() + '%' : '0%'
 
     progressBar.innerHTML = completedCount + ' / ' + database.length
     progressBar.style.width = completedPercentage
@@ -107,6 +111,10 @@ additionalCheckAll.addEventListener('click', () => {
 allButton.addEventListener('click', () => renderItems(DB.db))
 activeButton.addEventListener('click', () => renderItems(DB.db.filter(item => !item.completed)))
 completedButton.addEventListener('click', () => renderItems(DB.db.filter(item => item.completed)))
+removeCompletedButton.addEventListener('click', () => {
+    DB.removeAllCompleted()
+    renderItems(DB.db)
+})
 
 renderItems(DB.db)
 
